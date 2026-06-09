@@ -9,15 +9,7 @@ interface Props {
 export function CVPreview({ cv }: Props) {
   const { personal, summary, experience, projects, education, skills, languages } = cv;
 
-  const skillRows = [
-    { label: "Languages & Frameworks", value: skills.languages },
-    { label: "Architecture & Patterns", value: skills.architecture },
-    { label: "Databases & Messaging", value: skills.databases },
-    { label: "Cloud & DevOps", value: skills.cloud },
-    { label: "APIs", value: skills.apis },
-    { label: "Testing & Quality", value: skills.testing },
-    { label: "Version Control", value: skills.versionControl },
-  ].filter((r) => r.value);
+  const skillRows = (Array.isArray(skills) ? skills : []).filter(s => s.value);
 
   const projectsByCategory = projects.reduce<Record<string, typeof projects>>(
     (acc, p) => {
@@ -34,6 +26,7 @@ export function CVPreview({ cv }: Props) {
     personal.phone,
     personal.linkedin,
     personal.website,
+    ...(personal.customFields ?? []).map(f => f.value),
   ].filter(Boolean);
 
   return (
@@ -160,10 +153,10 @@ export function CVPreview({ cv }: Props) {
       {/* Skills */}
       {skillRows.length > 0 && (
         <PreviewSection title="CORE SKILLS">
-          {skillRows.map(({ label, value }) => (
-            <p key={label} style={{ fontSize: 12.5, margin: "0 0 3px" }}>
-              <strong>{label}:</strong>{" "}
-              <span style={{ color: "#555" }}>{value}</span>
+          {skillRows.map((s) => (
+            <p key={s.id} style={{ fontSize: 12.5, margin: "0 0 3px" }}>
+              <strong>{s.label}:</strong>{" "}
+              <span style={{ color: "#555" }}>{s.value}</span>
             </p>
           ))}
         </PreviewSection>

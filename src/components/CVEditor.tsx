@@ -1,7 +1,21 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { CV } from "@/types/cv";
+import { CV, CVSkillItem } from "@/types/cv";
+
+function migrateCV(cv: CV): CV {
+  if (Array.isArray(cv.skills)) return cv;
+  const legacy = cv.skills as unknown as Record<string, string>;
+  const map: Record<string, string> = {
+    languages: "Languages & Frameworks", architecture: "Architecture & Patterns",
+    databases: "Databases & Messaging", cloud: "Cloud & DevOps", apis: "APIs",
+    testing: "Testing & Quality", versionControl: "Version Control",
+  };
+  const skills: CVSkillItem[] = Object.entries(map)
+    .filter(([k]) => legacy[k])
+    .map(([k, label]) => ({ id: k, label, value: legacy[k] ?? "" }));
+  return { ...cv, skills };
+}
 import { CVPreview } from "@/components/preview/CVPreview";
 import { PersonalSection } from "@/components/editor/PersonalSection";
 import { ExperienceSection } from "@/components/editor/ExperienceSection";
@@ -61,12 +75,12 @@ export function CVEditor({ initialCV, cvName }: Props) {
     try {
       const raw = localStorage.getItem(DRAFT_KEY(cvName));
       if (!raw) return initialCV;
-      const draft = JSON.parse(raw) as CV;
+      const draft = migrateCV(JSON.parse(raw) as CV);
       const draftTime = new Date(draft.meta.updatedAt).getTime();
       const serverTime = new Date(initialCV.meta.updatedAt).getTime();
-      return draftTime > serverTime ? draft : initialCV;
+      return draftTime > serverTime ? draft : migrateCV(initialCV);
     } catch {
-      return initialCV;
+      return migrateCV(initialCV);
     }
   });
   const [hasDraft, setHasDraft] = useState(false);

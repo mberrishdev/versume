@@ -17,15 +17,13 @@ export function createEmptyCV(name = "My CV"): CV {
     experience: [],
     projects: [],
     education: [],
-    skills: {
-      languages: "",
-      architecture: "",
-      databases: "",
-      cloud: "",
-      apis: "",
-      testing: "",
-      versionControl: "",
-    },
+    skills: [
+      { id: uuidv4(), label: "Languages & Frameworks", value: "" },
+      { id: uuidv4(), label: "Architecture & Patterns", value: "" },
+      { id: uuidv4(), label: "Databases & Messaging", value: "" },
+      { id: uuidv4(), label: "Cloud & DevOps", value: "" },
+      { id: uuidv4(), label: "APIs", value: "" },
+    ],
     languages: [],
   };
 }
@@ -193,19 +191,15 @@ export const MIKHEIL_CV: CV = {
       degree: "Bachelor's degree of computer engineering",
     },
   ],
-  skills: {
-    languages: "C#, ASP.NET Core, .NET 8/9, JS, TS, React, Next.js, Entity Framework Core",
-    architecture:
-      "Domain-Driven Design (DDD), CQRS, Microservices, Event-Driven Architecture, Clean Architecture, Cloud-Native Design",
-    databases:
-      "SQL Server, PostgreSQL, MySQL, Elasticsearch, RabbitMQ, Kafka, Redis, Azure Blob, AWS S3",
-    cloud:
-      "Azure, AWS, Docker, Kubernetes, CI/CD (Azure DevOps, GitHub Actions, GitLab CI), Infrastructure as Code (Terraform, Bicep), Monitoring & Logging (Prometheus, Grafana, ELK stack)",
-    apis: "REST, GraphQL, API Gateway, JWT, OAuth2, OpenID Connect",
-    testing:
-      "xUnit, FluentAssertions, TDD, Integration Testing, Performance Optimization & Profiling",
-    versionControl: "Git, SVN",
-  },
+  skills: [
+    { id: "sk-1", label: "Languages & Frameworks", value: "C#, ASP.NET Core, .NET 8/9, JS, TS, React, Next.js, Entity Framework Core" },
+    { id: "sk-2", label: "Architecture & Patterns", value: "Domain-Driven Design (DDD), CQRS, Microservices, Event-Driven Architecture, Clean Architecture, Cloud-Native Design" },
+    { id: "sk-3", label: "Databases & Messaging", value: "SQL Server, PostgreSQL, MySQL, Elasticsearch, RabbitMQ, Kafka, Redis, Azure Blob, AWS S3" },
+    { id: "sk-4", label: "Cloud & DevOps", value: "Azure, AWS, Docker, Kubernetes, CI/CD (Azure DevOps, GitHub Actions, GitLab CI), Infrastructure as Code (Terraform, Bicep), Monitoring & Logging (Prometheus, Grafana, ELK stack)" },
+    { id: "sk-5", label: "APIs", value: "REST, GraphQL, API Gateway, JWT, OAuth2, OpenID Connect" },
+    { id: "sk-6", label: "Testing & Quality", value: "xUnit, FluentAssertions, TDD, Integration Testing, Performance Optimization & Profiling" },
+    { id: "sk-7", label: "Version Control", value: "Git, SVN" },
+  ],
   languages: [
     { id: uuidv4(), name: "Georgian", level: "Native" },
     { id: uuidv4(), name: "English", level: "Fluent" },

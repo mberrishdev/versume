@@ -5,6 +5,7 @@ export interface CVPersonal {
   phone: string;
   linkedin: string;
   website: string;
+  customFields?: { id: string; label: string; value: string }[];
 }
 
 export interface CVExperience {
@@ -34,14 +35,10 @@ export interface CVEducation {
   degree: string;
 }
 
-export interface CVSkills {
-  languages: string;
-  architecture: string;
-  databases: string;
-  cloud: string;
-  apis: string;
-  testing: string;
-  versionControl: string;
+export interface CVSkillItem {
+  id: string;
+  label: string;
+  value: string;
 }
 
 export interface CVLanguage {
@@ -64,6 +61,6 @@ export interface CV {
   experience: CVExperience[];
   projects: CVProject[];
   education: CVEducation[];
-  skills: CVSkills;
+  skills: CVSkillItem[];
   languages: CVLanguage[];
 }
