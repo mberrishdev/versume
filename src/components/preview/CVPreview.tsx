@@ -38,7 +38,7 @@ export function CVPreview({ cv }: Props) {
       minHeight: 1056,
     }}>
       {/* Header */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 20, breakInside: "avoid" }}>
         <h1 style={{
           fontSize: 26, fontWeight: 700, letterSpacing: "-0.025em",
           lineHeight: 1.1, color: "#111", margin: "0 0 4px",
@@ -50,19 +50,32 @@ export function CVPreview({ cv }: Props) {
         )}
         {contactItems.length > 0 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 0, alignItems: "center" }}>
-            {contactItems.map((item, i) => (
-              <span key={i} style={{ display: "flex", alignItems: "center" }}>
-                {i > 0 && <span style={{ color: "#ccc", margin: "0 6px", fontSize: 10 }}>·</span>}
-                <span style={{ fontSize: 11, color: "#777" }}>{item}</span>
-              </span>
-            ))}
+            {contactItems.map((item, i) => {
+              const href = item!.startsWith("http") ? item
+                : item!.includes("@") ? `mailto:${item}`
+                : item!.startsWith("linkedin.com") || item!.includes(".") ? `https://${item}`
+                : null;
+              return (
+                <span key={i} style={{ display: "flex", alignItems: "center" }}>
+                  {i > 0 && <span style={{ color: "#ccc", margin: "0 6px", fontSize: 10 }}>·</span>}
+                  {href ? (
+                    <a href={href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#555", textDecoration: "none" }}
+                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.textDecoration = "underline"}
+                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.textDecoration = "none"}
+                    >{item}</a>
+                  ) : (
+                    <span style={{ fontSize: 11, color: "#777" }}>{item}</span>
+                  )}
+                </span>
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* Summary */}
       {summary && (
-        <p style={{ fontSize: 13, color: "#444", marginBottom: 18, lineHeight: 1.6 }}>{summary}</p>
+        <p style={{ fontSize: 13, color: "#444", marginBottom: 18, lineHeight: 1.6, breakInside: "avoid" }}>{summary}</p>
       )}
 
       {/* Experience */}
@@ -70,7 +83,7 @@ export function CVPreview({ cv }: Props) {
         <PreviewSection title="PROFESSIONAL EXPERIENCE">
           {experience.map((exp) => (
             <div key={exp.id} style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2, breakAfter: "avoid" }}>
                 <span style={{ fontWeight: 700, fontSize: 13 }}>
                   {exp.role}
                   {exp.company && <span style={{ fontWeight: 400, color: "#666" }}> · {exp.company}</span>}
@@ -80,16 +93,13 @@ export function CVPreview({ cv }: Props) {
                 </span>
               </div>
               {exp.description && (
-                <p style={{ fontSize: 12.5, color: "#555", margin: "2px 0 4px", lineHeight: 1.5 }}>{exp.description}</p>
+                <p style={{ fontSize: 12.5, color: "#555", margin: "2px 0 4px", lineHeight: 1.5, breakAfter: "avoid" }}>{exp.description}</p>
               )}
               {exp.bullets.length > 0 && (
                 <div style={{ marginTop: 4 }}>
                   {exp.bullets.map((b, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", marginBottom: 3 }}>
-                      <span style={{
-                        color: "#888", fontSize: 14, lineHeight: 1,
-                        marginRight: 7, marginTop: 2, flexShrink: 0,
-                      }}>·</span>
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", marginBottom: 3, breakInside: "avoid" }}>
+                      <span style={{ color: "#888", fontSize: 14, lineHeight: 1, marginRight: 7, marginTop: 2, flexShrink: 0 }}>·</span>
                       <span style={{ fontSize: 12.5, color: "#333", lineHeight: 1.5 }}>{b}</span>
                     </div>
                   ))}
@@ -104,10 +114,10 @@ export function CVPreview({ cv }: Props) {
       {projects.length > 0 && (
         <PreviewSection title="PROJECTS">
           {Object.entries(projectsByCategory).map(([cat, projs]) => (
-            <div key={cat} style={{ marginBottom: 10 }}>
+            <div key={cat} style={{ marginBottom: 10, breakInside: "avoid" }}>
               <p style={{ fontSize: 11, color: "#888", marginBottom: 5, fontWeight: 500 }}>{cat}</p>
               {projs.map((p) => (
-                <div key={p.id} style={{ display: "flex", alignItems: "flex-start", marginBottom: 4 }}>
+                <div key={p.id} style={{ display: "flex", alignItems: "flex-start", marginBottom: 4, breakInside: "avoid" }}>
                   <span style={{ color: "#888", fontSize: 14, lineHeight: 1, marginRight: 7, marginTop: 2, flexShrink: 0 }}>·</span>
                   <span style={{ fontSize: 12.5, lineHeight: 1.5 }}>
                     <strong>{p.name}</strong>
@@ -136,7 +146,7 @@ export function CVPreview({ cv }: Props) {
       {education.length > 0 && (
         <PreviewSection title="EDUCATION">
           {education.map((edu) => (
-            <div key={edu.id} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+            <div key={edu.id} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, breakInside: "avoid" }}>
               <div>
                 <p style={{ fontWeight: 700, fontSize: 13, margin: "0 0 1px" }}>{edu.institution}</p>
                 <p style={{ fontSize: 12.5, color: "#555", margin: 0 }}>{edu.degree}</p>
@@ -154,7 +164,7 @@ export function CVPreview({ cv }: Props) {
       {skillRows.length > 0 && (
         <PreviewSection title="CORE SKILLS">
           {skillRows.map((s) => (
-            <p key={s.id} style={{ fontSize: 12.5, margin: "0 0 3px" }}>
+            <p key={s.id} style={{ fontSize: 12.5, margin: "0 0 3px", breakInside: "avoid" }}>
               <strong>{s.label}:</strong>{" "}
               <span style={{ color: "#555" }}>{s.value}</span>
             </p>
@@ -166,7 +176,7 @@ export function CVPreview({ cv }: Props) {
       {languages.length > 0 && (
         <PreviewSection title="LANGUAGES">
           {languages.map((l) => (
-            <div key={l.id} style={{ display: "flex", alignItems: "flex-start", marginBottom: 3 }}>
+            <div key={l.id} style={{ display: "flex", alignItems: "flex-start", marginBottom: 3, breakInside: "avoid" }}>
               <span style={{ color: "#888", fontSize: 14, lineHeight: 1, marginRight: 7, marginTop: 2, flexShrink: 0 }}>·</span>
               <span style={{ fontSize: 12.5, color: "#333" }}>{l.name}{l.level ? ` — ${l.level}` : ""}</span>
             </div>
@@ -182,7 +192,7 @@ function PreviewSection({ title, children }: { title: string; children: React.Re
     <div style={{ marginTop: 22, marginBottom: 4 }}>
       <h2 style={{
         fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: "#888",
-        textTransform: "uppercase",
+        textTransform: "uppercase", breakAfter: "avoid",
         borderBottom: "1px solid #E8E8E8", paddingBottom: 4, marginBottom: 10, margin: "0 0 10px",
       }}>
         {title}
