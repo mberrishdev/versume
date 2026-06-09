@@ -87,6 +87,8 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--v-border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--v-border-hover); }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { scrollbar-width: none; }
   input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 30px var(--v-bg-0) inset !important;
     -webkit-text-fill-color: var(--v-text-1) !important;

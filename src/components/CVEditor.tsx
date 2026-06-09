@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { CV } from "@/types/cv";
 import { CVPreview } from "@/components/preview/CVPreview";
 import { PersonalSection } from "@/components/editor/PersonalSection";
@@ -78,6 +78,31 @@ export function CVEditor({ initialCV, cvName }: Props) {
   const [history, setHistory] = useState<VersionEntry[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("personal");
+  const [showExport, setShowExport] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showExport) return;
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setShowExport(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showExport]);
+
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(cv, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `${cvName}.json`; a.click();
+    URL.revokeObjectURL(url);
+    setShowExport(false);
+  };
+
+  const exportPDF = () => {
+    window.open(`/print?cv=${encodeURIComponent(cvName)}`, "_blank");
+    setShowExport(false);
+  };
 
   useEffect(() => {
     try {
@@ -216,6 +241,36 @@ export function CVEditor({ initialCV, cvName }: Props) {
             History
           </TopBarGhostBtn>
 
+          {/* Export dropdown */}
+          <div ref={exportRef} style={{ position: "relative" }}>
+            <TopBarGhostBtn onClick={() => setShowExport(v => !v)}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export
+            </TopBarGhostBtn>
+            {showExport && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 50,
+                background: "var(--v-bg-2)", border: "1px solid var(--v-border)",
+                borderRadius: 8, padding: 4, minWidth: 140,
+                boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                animation: "modalIn 0.15s ease",
+              }}>
+                <ExportItem icon={
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                } label="Export PDF" onClick={exportPDF} />
+                <ExportItem icon={
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                } label="Export JSON" onClick={exportJSON} />
+              </div>
+            )}
+          </div>
+
           <TopBarGhostBtn onClick={() => setShowPreview(v => !v)}>
             {showPreview ? (
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -271,7 +326,7 @@ export function CVEditor({ initialCV, cvName }: Props) {
           overflow: "hidden",
         }}>
           {/* Tab bar */}
-          <div style={{
+          <div className="hide-scrollbar" style={{
             display: "flex", alignItems: "stretch",
             borderBottom: "1px solid var(--v-border)",
             flexShrink: 0, overflowX: "auto",
@@ -310,16 +365,23 @@ export function CVEditor({ initialCV, cvName }: Props) {
                 <PersonalSection data={cv.personal} onChange={v => update("personal", v)} />
                 <SectionLabel style={{ marginTop: 20 }}>Summary</SectionLabel>
                 <textarea
-                  rows={5}
                   value={cv.summary}
-                  onChange={e => update("summary", e.target.value)}
+                  onChange={e => {
+                    update("summary", e.target.value);
+                    e.target.style.height = "auto";
+                    e.target.style.height = e.target.scrollHeight + "px";
+                  }}
+                  ref={el => {
+                    if (el) { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; }
+                  }}
                   placeholder="Professional summary..."
                   style={{
                     width: "100%", background: "var(--v-bg-0)", color: "var(--v-text-1)",
                     border: "1px solid var(--v-border)", borderRadius: 6,
                     padding: "8px 10px", fontSize: 13, fontFamily: "var(--font-sans)",
                     resize: "none", outline: "none", boxSizing: "border-box",
-                    lineHeight: 1.5, transition: "border-color 0.15s ease",
+                    lineHeight: 1.6, transition: "border-color 0.15s ease",
+                    minHeight: 80, overflow: "hidden",
                   }}
                   onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
                   onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
@@ -568,5 +630,26 @@ function TopBarGhostBtn({ children, onClick }: { children: React.ReactNode; onCl
         (e.currentTarget as HTMLElement).style.borderColor = "transparent";
       }}
     >{children}</button>
+  );
+}
+
+function ExportItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: "flex", alignItems: "center", gap: 8, width: "100%",
+        padding: "7px 10px", fontSize: 12, fontWeight: 400,
+        background: hov ? "var(--v-bg-3)" : "transparent",
+        color: hov ? "var(--v-text-1)" : "var(--v-text-2)",
+        border: "none", borderRadius: 5, cursor: "pointer",
+        fontFamily: "var(--font-sans)", transition: "all 0.1s ease", textAlign: "left",
+      }}
+    >
+      {icon}{label}
+    </button>
   );
 }
