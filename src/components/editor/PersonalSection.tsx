@@ -1,8 +1,6 @@
 "use client";
 
 import { CVPersonal } from "@/types/cv";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 interface Props {
   data: CVPersonal;
@@ -14,15 +12,13 @@ export function PersonalSection({ data, onChange }: Props) {
     onChange({ ...data, [key]: e.target.value });
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Full Name" value={data.name} onChange={set("name")} />
-        <Field label="Title" value={data.title} onChange={set("title")} />
-        <Field label="Email" value={data.email} onChange={set("email")} type="email" />
-        <Field label="Phone" value={data.phone} onChange={set("phone")} />
-        <Field label="LinkedIn" value={data.linkedin} onChange={set("linkedin")} />
-        <Field label="Website" value={data.website} onChange={set("website")} />
-      </div>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      <Field label="Full Name" value={data.name} onChange={set("name")} />
+      <Field label="Title" value={data.title} onChange={set("title")} />
+      <Field label="Email" value={data.email} onChange={set("email")} type="email" />
+      <Field label="Phone" value={data.phone} onChange={set("phone")} />
+      <Field label="LinkedIn" value={data.linkedin} onChange={set("linkedin")} />
+      <Field label="Website" value={data.website} onChange={set("website")} />
     </div>
   );
 }
@@ -39,9 +35,24 @@ function Field({
   type?: string;
 }) {
   return (
-    <div className="space-y-1">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Input value={value} onChange={onChange} type={type} className="h-8 text-sm" />
+    <div>
+      <label style={{
+        display: "block", fontSize: 10, fontWeight: 500, color: "var(--v-text-2)",
+        textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5,
+      }}>{label}</label>
+      <input
+        value={value}
+        onChange={onChange}
+        type={type}
+        style={{
+          width: "100%", background: "var(--v-bg-0)", color: "var(--v-text-1)",
+          border: "1px solid var(--v-border)", borderRadius: 6,
+          padding: "6px 10px", fontSize: 13, fontFamily: "var(--font-sans)",
+          outline: "none", boxSizing: "border-box", transition: "border-color 0.15s ease",
+        }}
+        onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+        onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
+      />
     </div>
   );
 }

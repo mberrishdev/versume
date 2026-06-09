@@ -29,157 +29,169 @@ export function CVPreview({ cv }: Props) {
     {}
   );
 
+  const contactItems = [
+    personal.email,
+    personal.phone,
+    personal.linkedin,
+    personal.website,
+  ].filter(Boolean);
+
   return (
-    <div
-      className="bg-white text-[#1a1a1a] font-sans text-[13px] leading-[1.5] p-10 max-w-[816px] mx-auto"
-      style={{ fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif" }}
-    >
+    <div style={{
+      background: "#ffffff", color: "#1a1a1a",
+      fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+      fontSize: 13, lineHeight: 1.5,
+      padding: "44px 40px", maxWidth: 816, margin: "0 auto",
+      minHeight: 1056,
+    }}>
       {/* Header */}
-      <div className="flex justify-between items-start mb-6">
-        <div>
-          <h1 className="text-[28px] font-bold tracking-tight leading-none">
-            {personal.name || "Your Name"}
-          </h1>
-          <p className="text-[14px] text-gray-500 mt-1">{personal.title}</p>
-        </div>
-        <div className="text-right text-[12px] text-gray-600 space-y-0.5">
-          {personal.email && (
-            <p className="text-blue-600">{personal.email}</p>
-          )}
-          {personal.phone && <p>{personal.phone}</p>}
-          {personal.linkedin && (
-            <p className="text-blue-600">{personal.linkedin}</p>
-          )}
-          {personal.website && (
-            <p className="text-blue-600">{personal.website}</p>
-          )}
-        </div>
+      <div style={{ marginBottom: 20 }}>
+        <h1 style={{
+          fontSize: 26, fontWeight: 700, letterSpacing: "-0.025em",
+          lineHeight: 1.1, color: "#111", margin: "0 0 4px",
+        }}>
+          {personal.name || "Your Name"}
+        </h1>
+        {personal.title && (
+          <p style={{ fontSize: 14, color: "#555", margin: "0 0 8px" }}>{personal.title}</p>
+        )}
+        {contactItems.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 0, alignItems: "center" }}>
+            {contactItems.map((item, i) => (
+              <span key={i} style={{ display: "flex", alignItems: "center" }}>
+                {i > 0 && <span style={{ color: "#ccc", margin: "0 6px", fontSize: 10 }}>·</span>}
+                <span style={{ fontSize: 11, color: "#777" }}>{item}</span>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Summary */}
       {summary && (
-        <p className="text-[13px] text-gray-700 mb-6 leading-relaxed">{summary}</p>
+        <p style={{ fontSize: 13, color: "#444", marginBottom: 18, lineHeight: 1.6 }}>{summary}</p>
       )}
 
       {/* Experience */}
       {experience.length > 0 && (
-        <Section title="PROFESSIONAL EXPERIENCE">
+        <PreviewSection title="PROFESSIONAL EXPERIENCE">
           {experience.map((exp) => (
-            <div key={exp.id} className="mb-4">
-              <div className="flex justify-between items-baseline">
-                <span className="font-bold text-[13px]">
-                  {exp.company} | {exp.role}
+            <div key={exp.id} style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                <span style={{ fontWeight: 700, fontSize: 13 }}>
+                  {exp.role}
+                  {exp.company && <span style={{ fontWeight: 400, color: "#666" }}> · {exp.company}</span>}
                 </span>
-                <span className="text-[12px] text-gray-500">
-                  {exp.location} | {exp.period}
+                <span style={{ fontSize: 11, color: "#999", flexShrink: 0, marginLeft: 12 }}>
+                  {[exp.period, exp.location].filter(Boolean).join(" · ")}
                 </span>
               </div>
               {exp.description && (
-                <p className="text-[12.5px] text-gray-700 mt-0.5">{exp.description}</p>
+                <p style={{ fontSize: 12.5, color: "#555", margin: "2px 0 4px", lineHeight: 1.5 }}>{exp.description}</p>
               )}
               {exp.bullets.length > 0 && (
-                <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4">
+                <div style={{ marginTop: 4 }}>
                   {exp.bullets.map((b, i) => (
-                    <li key={i} className="text-[12.5px] text-gray-800">
-                      {b}
-                    </li>
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", marginBottom: 3 }}>
+                      <span style={{
+                        color: "#888", fontSize: 14, lineHeight: 1,
+                        marginRight: 7, marginTop: 2, flexShrink: 0,
+                      }}>·</span>
+                      <span style={{ fontSize: 12.5, color: "#333", lineHeight: 1.5 }}>{b}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </div>
           ))}
-        </Section>
+        </PreviewSection>
       )}
 
       {/* Projects */}
       {projects.length > 0 && (
-        <Section title="PROJECTS">
+        <PreviewSection title="PROJECTS">
           {Object.entries(projectsByCategory).map(([cat, projs]) => (
-            <div key={cat} className="mb-3">
-              <p className="text-[12px] text-gray-500 mb-1">{cat}</p>
-              <ul className="space-y-1 list-disc list-outside ml-4">
-                {projs.map((p) => (
-                  <li key={p.id} className="text-[12.5px]">
-                    <span className="font-bold">{p.name}</span>
-                    {p.role && <span className="text-gray-500"> - {p.role}: </span>}
-                    <span className="text-gray-700">{p.description}</span>
+            <div key={cat} style={{ marginBottom: 10 }}>
+              <p style={{ fontSize: 11, color: "#888", marginBottom: 5, fontWeight: 500 }}>{cat}</p>
+              {projs.map((p) => (
+                <div key={p.id} style={{ display: "flex", alignItems: "flex-start", marginBottom: 4 }}>
+                  <span style={{ color: "#888", fontSize: 14, lineHeight: 1, marginRight: 7, marginTop: 2, flexShrink: 0 }}>·</span>
+                  <span style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+                    <strong>{p.name}</strong>
+                    {p.role && <span style={{ color: "#666" }}> - {p.role}: </span>}
+                    {!p.role && " "}
+                    <span style={{ color: "#555" }}>{p.description}</span>
                     {p.links.length > 0 && (
-                      <span className="ml-1">
+                      <span style={{ marginLeft: 4 }}>
                         {p.links.map((l, i) => (
                           <span key={i}>
-                            {i > 0 && " | "}
-                            <a
-                              href={l.url || "#"}
-                              className="text-blue-600"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {l.label}
-                            </a>
+                            {i > 0 && <span style={{ color: "#ccc" }}> | </span>}
+                            <a href={l.url || "#"} style={{ color: "#2563EB" }} target="_blank" rel="noopener noreferrer">{l.label}</a>
                           </span>
                         ))}
                       </span>
                     )}
-                  </li>
-                ))}
-              </ul>
+                  </span>
+                </div>
+              ))}
             </div>
           ))}
-        </Section>
+        </PreviewSection>
       )}
 
       {/* Education */}
       {education.length > 0 && (
-        <Section title="EDUCATION">
+        <PreviewSection title="EDUCATION">
           {education.map((edu) => (
-            <div key={edu.id} className="flex justify-between mb-2">
+            <div key={edu.id} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
               <div>
-                <span className="font-bold text-[13px]">{edu.institution}</span>
-                <p className="text-[12.5px] text-gray-600">{edu.degree}</p>
+                <p style={{ fontWeight: 700, fontSize: 13, margin: "0 0 1px" }}>{edu.institution}</p>
+                <p style={{ fontSize: 12.5, color: "#555", margin: 0 }}>{edu.degree}</p>
               </div>
-              <div className="text-right text-[12px] text-gray-500">
-                <p>{edu.location}</p>
-                <p>{edu.period}</p>
+              <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
+                <p style={{ fontSize: 11, color: "#999", margin: "0 0 1px" }}>{edu.location}</p>
+                <p style={{ fontSize: 11, color: "#999", margin: 0 }}>{edu.period}</p>
               </div>
             </div>
           ))}
-        </Section>
+        </PreviewSection>
       )}
 
       {/* Skills */}
       {skillRows.length > 0 && (
-        <Section title="CORE SKILLS">
-          <div className="space-y-0.5">
-            {skillRows.map(({ label, value }) => (
-              <p key={label} className="text-[12.5px]">
-                <span className="font-bold">{label}:</span>{" "}
-                <span className="text-gray-700">{value}</span>
-              </p>
-            ))}
-          </div>
-        </Section>
+        <PreviewSection title="CORE SKILLS">
+          {skillRows.map(({ label, value }) => (
+            <p key={label} style={{ fontSize: 12.5, margin: "0 0 3px" }}>
+              <strong>{label}:</strong>{" "}
+              <span style={{ color: "#555" }}>{value}</span>
+            </p>
+          ))}
+        </PreviewSection>
       )}
 
       {/* Languages */}
       {languages.length > 0 && (
-        <Section title="LANGUAGES">
-          <ul className="list-disc list-outside ml-4 space-y-0.5">
-            {languages.map((l) => (
-              <li key={l.id} className="text-[12.5px]">
-                {l.name} - {l.level}
-              </li>
-            ))}
-          </ul>
-        </Section>
+        <PreviewSection title="LANGUAGES">
+          {languages.map((l) => (
+            <div key={l.id} style={{ display: "flex", alignItems: "flex-start", marginBottom: 3 }}>
+              <span style={{ color: "#888", fontSize: 14, lineHeight: 1, marginRight: 7, marginTop: 2, flexShrink: 0 }}>·</span>
+              <span style={{ fontSize: 12.5, color: "#333" }}>{l.name}{l.level ? ` — ${l.level}` : ""}</span>
+            </div>
+          ))}
+        </PreviewSection>
       )}
     </div>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function PreviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-5">
-      <h2 className="text-[13px] font-bold tracking-widest text-gray-800 border-b border-gray-300 pb-1 mb-3">
+    <div style={{ marginTop: 22, marginBottom: 4 }}>
+      <h2 style={{
+        fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: "#888",
+        textTransform: "uppercase",
+        borderBottom: "1px solid #E8E8E8", paddingBottom: 4, marginBottom: 10, margin: "0 0 10px",
+      }}>
         {title}
       </h2>
       {children}

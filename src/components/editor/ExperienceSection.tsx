@@ -1,11 +1,6 @@
 "use client";
 
 import { CVExperience } from "@/types/cv";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Plus, Trash2, GripVertical } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 interface Props {
@@ -17,15 +12,7 @@ export function ExperienceSection({ data, onChange }: Props) {
   const add = () =>
     onChange([
       ...data,
-      {
-        id: uuidv4(),
-        company: "",
-        role: "",
-        location: "",
-        period: "",
-        description: "",
-        bullets: [],
-      },
+      { id: uuidv4(), company: "", role: "", location: "", period: "", description: "", bullets: [] },
     ]);
 
   const remove = (id: string) => onChange(data.filter((e) => e.id !== id));
@@ -51,107 +38,168 @@ export function ExperienceSection({ data, onChange }: Props) {
   };
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {data.map((exp, i) => (
-        <div key={exp.id} className="border border-border rounded-lg p-4 space-y-3 bg-card">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
+        <div key={exp.id} style={{
+          background: "var(--v-bg-2)", border: "1px solid var(--v-border)",
+          borderRadius: 10, padding: 14,
+        }}>
+          {/* Card header */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--v-text-1)" }}>
               {exp.company || `Experience ${i + 1}`}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={() => remove(exp.id)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            </span>
+            <TrashBtn onClick={() => remove(exp.id)} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Company</Label>
-              <Input
-                className="h-8 text-sm"
-                value={exp.company}
-                onChange={(e) => update(exp.id, "company", e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Role</Label>
-              <Input
-                className="h-8 text-sm"
-                value={exp.role}
-                onChange={(e) => update(exp.id, "role", e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Location</Label>
-              <Input
-                className="h-8 text-sm"
-                value={exp.location}
-                onChange={(e) => update(exp.id, "location", e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Period</Label>
-              <Input
-                className="h-8 text-sm"
-                value={exp.period}
-                onChange={(e) => update(exp.id, "period", e.target.value)}
-                placeholder="May 2021 - Present"
-              />
-            </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+            <InlineField label="Company" value={exp.company} onChange={v => update(exp.id, "company", v)} />
+            <InlineField label="Role" value={exp.role} onChange={v => update(exp.id, "role", v)} />
+            <InlineField label="Location" value={exp.location} onChange={v => update(exp.id, "location", v)} />
+            <InlineField label="Period" value={exp.period} onChange={v => update(exp.id, "period", v)} placeholder="May 2021 - Present" />
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Description</Label>
-            <Textarea
-              className="text-sm resize-none"
+          <div style={{ marginBottom: 10 }}>
+            <FieldLabel>Description</FieldLabel>
+            <textarea
               rows={2}
               value={exp.description}
-              onChange={(e) => update(exp.id, "description", e.target.value)}
+              onChange={e => update(exp.id, "description", e.target.value)}
+              style={textareaStyle}
+              onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+              onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Bullet Points</Label>
+          <div>
+            <FieldLabel>Bullet Points</FieldLabel>
             {exp.bullets.map((b, idx) => (
-              <div key={idx} className="flex gap-2">
-                <Input
-                  className="h-8 text-sm"
+              <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 5, alignItems: "center" }}>
+                <span style={{ color: "var(--v-text-3)", fontSize: 16, lineHeight: 1, flexShrink: 0, marginTop: 1 }}>·</span>
+                <input
                   value={b}
-                  onChange={(e) => updateBullet(exp.id, idx, e.target.value)}
+                  onChange={e => updateBullet(exp.id, idx, e.target.value)}
                   placeholder="Achievement or responsibility..."
+                  style={{ ...inputStyle, flex: 1 }}
+                  onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+                  onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                  onClick={() => removeBullet(exp.id, idx)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                <TrashBtn onClick={() => removeBullet(exp.id, idx)} />
               </div>
             ))}
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs"
-              onClick={() => addBullet(exp.id)}
-            >
-              <Plus className="h-3 w-3 mr-1" />
-              Add bullet
-            </Button>
+            <GhostSmallBtn onClick={() => addBullet(exp.id)}>
+              + Add bullet
+            </GhostSmallBtn>
           </div>
         </div>
       ))}
 
-      <Button variant="outline" size="sm" onClick={add} className="w-full h-8 text-xs border-dashed">
-        <Plus className="h-3.5 w-3.5 mr-1" />
-        Add Experience
-      </Button>
+      <GhostAddBtn onClick={add}>+ Add Experience</GhostAddBtn>
     </div>
   );
 }
+
+function InlineField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div>
+      <FieldLabel>{label}</FieldLabel>
+      <input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={inputStyle}
+        onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+        onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
+      />
+    </div>
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label style={{
+      display: "block", fontSize: 10, fontWeight: 500, color: "var(--v-text-2)",
+      textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4,
+    }}>{children}</label>
+  );
+}
+
+function TrashBtn({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center",
+        background: "transparent", border: "none", cursor: "pointer",
+        color: "var(--v-text-3)", borderRadius: 4, flexShrink: 0,
+        transition: "color 0.12s ease",
+      }}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#EF4444"}
+      onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "var(--v-text-3)"}
+    >
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </button>
+  );
+}
+
+function GhostSmallBtn({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        fontSize: 12, color: "var(--v-text-3)", background: "transparent",
+        border: "1px solid var(--v-border)", borderRadius: 5, padding: "3px 10px",
+        cursor: "pointer", fontFamily: "var(--font-sans)", transition: "all 0.12s ease",
+        marginTop: 2,
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.color = "var(--v-text-2)";
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border-hover)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.color = "var(--v-text-3)";
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)";
+      }}
+    >{children}</button>
+  );
+}
+
+function GhostAddBtn({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: "100%", padding: "8px", fontSize: 13, color: "var(--v-text-3)",
+        background: "transparent", border: "1px dashed var(--v-border)", borderRadius: 8,
+        cursor: "pointer", fontFamily: "var(--font-sans)", transition: "all 0.12s ease",
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.color = "var(--v-text-2)";
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border-hover)";
+        (e.currentTarget as HTMLElement).style.background = "var(--v-bg-2)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.color = "var(--v-text-3)";
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)";
+        (e.currentTarget as HTMLElement).style.background = "transparent";
+      }}
+    >{children}</button>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", background: "var(--v-bg-0)", color: "var(--v-text-1)",
+  border: "1px solid var(--v-border)", borderRadius: 6,
+  padding: "6px 10px", fontSize: 13, fontFamily: "var(--font-sans)",
+  outline: "none", boxSizing: "border-box", transition: "border-color 0.15s ease",
+};
+
+const textareaStyle: React.CSSProperties = {
+  width: "100%", background: "var(--v-bg-0)", color: "var(--v-text-1)",
+  border: "1px solid var(--v-border)", borderRadius: 6,
+  padding: "6px 10px", fontSize: 13, fontFamily: "var(--font-sans)",
+  resize: "none", outline: "none", boxSizing: "border-box", lineHeight: 1.5,
+  transition: "border-color 0.15s ease",
+};

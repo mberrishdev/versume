@@ -1,10 +1,6 @@
 "use client";
 
 import { CVEducation } from "@/types/cv";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Plus, Trash2, GripVertical } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 interface Props {
@@ -12,12 +8,16 @@ interface Props {
   onChange: (data: CVEducation[]) => void;
 }
 
+const inputStyle: React.CSSProperties = {
+  width: "100%", background: "var(--v-bg-0)", color: "var(--v-text-1)",
+  border: "1px solid var(--v-border)", borderRadius: 6,
+  padding: "6px 10px", fontSize: 13, fontFamily: "var(--font-sans)",
+  outline: "none", boxSizing: "border-box", transition: "border-color 0.15s ease",
+};
+
 export function EducationSection({ data, onChange }: Props) {
   const add = () =>
-    onChange([
-      ...data,
-      { id: uuidv4(), institution: "", location: "", period: "", degree: "" },
-    ]);
+    onChange([...data, { id: uuidv4(), institution: "", location: "", period: "", degree: "" }]);
 
   const remove = (id: string) => onChange(data.filter((e) => e.id !== id));
 
@@ -25,66 +25,112 @@ export function EducationSection({ data, onChange }: Props) {
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {data.map((edu, i) => (
-        <div key={edu.id} className="border border-border rounded-lg p-4 space-y-3 bg-card">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
+        <div key={edu.id} style={{
+          background: "var(--v-bg-2)", border: "1px solid var(--v-border)",
+          borderRadius: 10, padding: 14,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--v-text-1)" }}>
               {edu.institution || `Education ${i + 1}`}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={() => remove(edu.id)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            </span>
+            <TrashBtn onClick={() => remove(edu.id)} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2 space-y-1">
-              <Label className="text-xs text-muted-foreground">Institution</Label>
-              <Input
-                className="h-8 text-sm"
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div style={{ gridColumn: "1 / -1" }}>
+              <FieldLabel>Institution</FieldLabel>
+              <input
                 value={edu.institution}
-                onChange={(e) => update(edu.id, "institution", e.target.value)}
+                onChange={e => update(edu.id, "institution", e.target.value)}
+                style={inputStyle}
+                onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+                onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
               />
             </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Location</Label>
-              <Input
-                className="h-8 text-sm"
+            <div>
+              <FieldLabel>Location</FieldLabel>
+              <input
                 value={edu.location}
-                onChange={(e) => update(edu.id, "location", e.target.value)}
+                onChange={e => update(edu.id, "location", e.target.value)}
+                style={inputStyle}
+                onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+                onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
               />
             </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Period</Label>
-              <Input
-                className="h-8 text-sm"
+            <div>
+              <FieldLabel>Period</FieldLabel>
+              <input
                 value={edu.period}
-                onChange={(e) => update(edu.id, "period", e.target.value)}
+                onChange={e => update(edu.id, "period", e.target.value)}
                 placeholder="Sep 2020 - Jun 2024"
+                style={inputStyle}
+                onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+                onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
               />
             </div>
-            <div className="col-span-2 space-y-1">
-              <Label className="text-xs text-muted-foreground">Degree</Label>
-              <Input
-                className="h-8 text-sm"
+            <div style={{ gridColumn: "1 / -1" }}>
+              <FieldLabel>Degree</FieldLabel>
+              <input
                 value={edu.degree}
-                onChange={(e) => update(edu.id, "degree", e.target.value)}
+                onChange={e => update(edu.id, "degree", e.target.value)}
+                style={inputStyle}
+                onFocus={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-accent)"}
+                onBlur={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)"}
               />
             </div>
           </div>
         </div>
       ))}
 
-      <Button variant="outline" size="sm" onClick={add} className="w-full h-8 text-xs border-dashed">
-        <Plus className="h-3.5 w-3.5 mr-1" />
-        Add Education
-      </Button>
+      <button
+        onClick={add}
+        style={{
+          width: "100%", padding: "8px", fontSize: 13, color: "var(--v-text-3)",
+          background: "transparent", border: "1px dashed var(--v-border)", borderRadius: 8,
+          cursor: "pointer", fontFamily: "var(--font-sans)", transition: "all 0.12s ease",
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.color = "var(--v-text-2)";
+          (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border-hover)";
+          (e.currentTarget as HTMLElement).style.background = "var(--v-bg-2)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.color = "var(--v-text-3)";
+          (e.currentTarget as HTMLElement).style.borderColor = "var(--v-border)";
+          (e.currentTarget as HTMLElement).style.background = "transparent";
+        }}
+      >+ Add Education</button>
     </div>
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label style={{
+      display: "block", fontSize: 10, fontWeight: 500, color: "var(--v-text-2)",
+      textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4,
+    }}>{children}</label>
+  );
+}
+
+function TrashBtn({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center",
+        background: "transparent", border: "none", cursor: "pointer",
+        color: "var(--v-text-3)", borderRadius: 4,
+        transition: "color 0.12s ease",
+      }}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#EF4444"}
+      onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "var(--v-text-3)"}
+    >
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </button>
   );
 }

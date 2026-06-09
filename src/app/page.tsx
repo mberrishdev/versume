@@ -1,50 +1,118 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { LoginButton } from "@/components/LoginButton";
-import { GitFork, FileText, GitBranch, Layers } from "lucide-react";
 
 export default async function Home() {
   const session = await auth();
   if (session) redirect("/editor");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
-      <div className="max-w-md w-full text-center space-y-8">
-        <div className="space-y-3">
-          <div className="flex justify-center">
-            <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
-              <FileText className="h-6 w-6 text-primary-foreground" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">Versume</h1>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            Version your resume like code. Every save is a git commit in your
-            private GitHub repo — full history, multiple variants.
-          </p>
+    <div style={{
+      minHeight: "100vh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      background: "var(--v-bg-0)", position: "relative", overflow: "hidden",
+    }}>
+      {/* Ambient glow */}
+      <div style={{
+        position: "absolute", top: "-30%", left: "50%", transform: "translateX(-50%)",
+        width: 900, height: 700,
+        background: "radial-gradient(ellipse, rgba(245,158,11,0.06) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Dot grid */}
+      <div style={{
+        position: "absolute", inset: 0, opacity: 0.3,
+        backgroundImage: "radial-gradient(circle, #27272A 1px, transparent 1px)",
+        backgroundSize: "24px 24px", pointerEvents: "none",
+      }} />
+
+      {/* Nav */}
+      <nav style={{
+        position: "absolute", top: 0, left: 0, right: 0,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "16px 24px", zIndex: 2,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 26, height: 26, borderRadius: 6, background: "var(--v-accent)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#0A0A0B", fontWeight: 800, fontSize: 14,
+            fontFamily: "var(--font-mono)",
+          }}>V</div>
+          <span style={{ fontSize: 15, fontWeight: 600, color: "var(--v-text-1)", letterSpacing: "-0.03em" }}>versume</span>
+        </div>
+        <LoginButton variant="ghost" />
+      </nav>
+
+      {/* Hero */}
+      <div style={{ textAlign: "center", zIndex: 1, maxWidth: 600, padding: "0 24px", animation: "fadeIn 0.6s ease both" }}>
+        <h1 style={{
+          fontSize: 56, fontWeight: 700, letterSpacing: "-0.045em",
+          lineHeight: 1.08, color: "var(--v-text-1)", margin: "0 0 20px",
+        }}>
+          Version your resume<br />like code<span style={{ color: "var(--v-accent)" }}>.</span>
+        </h1>
+        <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--v-text-2)", margin: "0 0 32px" }}>
+          Structured CV editor backed by GitHub.<br />
+          Every save is a commit. Full history. Multiple variants.
+        </p>
+
+        {/* Pills */}
+        <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 36, flexWrap: "wrap" }}>
+          {[
+            { label: "GitHub backed" },
+            { label: "Version history" },
+            { label: "Multiple CVs" },
+          ].map(({ label }) => (
+            <span key={label} style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "6px 14px", borderRadius: 100,
+              background: "var(--v-bg-2)", border: "1px solid var(--v-border)",
+              color: "var(--v-text-2)", fontSize: 13, fontWeight: 500,
+            }}>{label}</span>
+          ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <Feature icon={<GitFork className="h-5 w-5" />} label="GitHub backed" />
-          <Feature icon={<GitBranch className="h-5 w-5" />} label="Version history" />
-          <Feature icon={<Layers className="h-5 w-5" />} label="Multiple CVs" />
-        </div>
+        <LoginButton variant="primary" />
 
-        <LoginButton />
-
-        <p className="text-xs text-muted-foreground">
-          Requires <code>repo</code> scope to create your private{" "}
-          <code>cv-store</code> repository.
+        <p style={{ fontSize: 12, color: "var(--v-text-3)", marginTop: 16 }}>
+          Creates a private{" "}
+          <code style={{
+            fontFamily: "var(--font-mono)", color: "var(--v-text-2)",
+            background: "var(--v-bg-2)", padding: "1px 5px", borderRadius: 3, fontSize: 11,
+          }}>cv-store</code>{" "}
+          repo in your GitHub account
         </p>
       </div>
-    </div>
-  );
-}
 
-function Feature({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-muted/50">
-      <div className="text-muted-foreground">{icon}</div>
-      <span className="text-xs text-muted-foreground">{label}</span>
+      {/* Git log widget */}
+      <div style={{
+        zIndex: 1, marginTop: 48, animation: "fadeIn 0.8s ease 0.2s both",
+        background: "var(--v-bg-1)", border: "1px solid var(--v-border)", borderRadius: 10,
+        padding: "14px 18px", fontFamily: "var(--font-mono)", fontSize: 12,
+        color: "var(--v-text-3)", lineHeight: 1.8, maxWidth: 380,
+      }}>
+        <div style={{
+          fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em",
+          color: "var(--v-text-3)", marginBottom: 6,
+          fontFamily: "var(--font-sans)", fontWeight: 500,
+        }}>git log — cv-store/default.json</div>
+        {[
+          { sha: "a3f2c1d", msg: "Update skills section" },
+          { sha: "b7e4f8a", msg: "Add new project description" },
+          { sha: "c9d1e3b", msg: "Initial commit" },
+        ].map(({ sha, msg }) => (
+          <div key={sha}>
+            <span style={{ color: "var(--v-accent)" }}>{sha}</span>{" "}{msg}
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div style={{ position: "absolute", bottom: 20, fontSize: 12, color: "var(--v-text-3)", zIndex: 1 }}>
+        Built for developers who version everything.
+      </div>
     </div>
   );
 }
